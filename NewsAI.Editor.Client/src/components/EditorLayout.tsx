@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ScriptEditor from './ScriptEditor';
+import MediaBin from './MediaBin';
 
 interface Props {
   onLogout?: () => void;
@@ -39,8 +40,8 @@ export default function EditorLayout({ onLogout }: Props) {
       </div>
 
       {showMediaBin && (
-        <div className="h-[200px] border-t border-gray-300 overflow-auto p-2 bg-gray-50">
-          Media Bin
+        <div className="h-[200px] border-t border-gray-300 bg-gray-50 p-2">
+          <MediaBin />
         </div>
       )}
       <button
