@@ -4,12 +4,14 @@ services:
     env: docker
     region: oregon
     plan: free
-    buildCommand: docker build -t newsai-editor .
     dockerfilePath: ./Dockerfile
+    buildCommand: docker build -t newsai-editor .
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: DEMO_MODE
         value: true
       - key: OPENAI_API_KEY
-        sync: false # Makes it secret
+        sync: false
+      - key: JWT_SECRET
+        sync: false
