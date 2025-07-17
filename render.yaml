@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: newsai-editor-poc
+    env: docker
+    region: oregon
+    plan: free
+    buildCommand: docker build -t newsai-editor .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DEMO_MODE
+        value: true
+      - key: OPENAI_API_KEY
+        sync: false # Makes it secret
