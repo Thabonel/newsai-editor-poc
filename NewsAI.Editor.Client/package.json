@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@monaco-editor/react": "^4.7.0",
     "@types/video.js": "^7.3.58",
     "autoprefixer": "^10.4.21",

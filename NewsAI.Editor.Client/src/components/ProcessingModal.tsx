@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
+import { HubConnectionBuilder, type HubConnection } from '@microsoft/signalr';
+import { useAuthStore } from '../stores/authStore';
 
 const STEPS = [
   'Analyzing script',
-  'Identifying required shots',
-  'Matching interviews',
-  'Creating timeline',
-  'Adjusting audio',
+  'Transcribing media files',
+  'Matching content to script',
+  'Generating timeline',
+  'Processing audio'
 ];
 
 interface Props {
@@ -17,42 +19,44 @@ interface Props {
 export default function ProcessingModal({ open, onCancel, onComplete }: Props) {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
+  const [connection, setConnection] = useState<HubConnection | null>(null);
+  const token = useAuthStore((s) => s.token);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !token) return;
 
     setProgress(0);
     setCurrentStep(0);
 
-    const durations = STEPS.map(() => 2000 + Math.random() * 1000);
-    let step = 0;
-    let interval: number;
+    const conn = new HubConnectionBuilder()
+      .withUrl('/hubs/editing', { accessTokenFactory: () => token })
+      .withAutomaticReconnect()
+      .build();
 
-    const runStep = () => {
-      const start = Date.now();
-      const duration = durations[step];
-      interval = setInterval(() => {
-        const elapsed = Date.now() - start;
-        const part = Math.min(elapsed / duration, 1);
-        setCurrentStep(step);
-        setProgress(((step + part) / STEPS.length) * 100);
-        if (part >= 1) {
-          clearInterval(interval);
-          step += 1;
-          if (step < STEPS.length) {
-            runStep();
-          } else {
-            setCurrentStep(STEPS.length - 1);
-            setProgress(100);
-            onComplete();
-          }
-        }
-      }, 100);
+    conn.on('ProgressUpdate', (data: { step: string; percent: number }) => {
+      const stepIndex = STEPS.findIndex((s) => s === data.step);
+      if (stepIndex >= 0) {
+        setCurrentStep(stepIndex);
+      }
+      setProgress(data.percent);
+    });
+
+    conn.on('ProcessingComplete', () => {
+      setProgress(100);
+      onComplete();
+    });
+
+    conn.start().then(() => {
+      conn.invoke('StartEditing');
+    });
+
+    setConnection(conn);
+
+    return () => {
+      conn.stop();
+      setConnection(null);
     };
-
-    runStep();
-    return () => clearInterval(interval);
-  }, [open, onComplete]);
+  }, [open, token, onComplete]);
 
   if (!open) return null;
 
@@ -83,7 +87,13 @@ export default function ProcessingModal({ open, onCancel, onComplete }: Props) {
         </ul>
         <button
           type="button"
-          onClick={onCancel}
+          onClick={() => {
+            if (connection) {
+              connection.invoke('CancelEditing');
+              connection.stop();
+            }
+            onCancel();
+          }}
           className="mt-4 self-end px-4 py-2 bg-red-500 text-white rounded"
         >
           Cancel
