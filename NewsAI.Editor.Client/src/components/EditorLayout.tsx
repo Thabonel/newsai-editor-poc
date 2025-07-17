@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ScriptEditor from './ScriptEditor';
 import MediaBin from './MediaBin';
+import VideoPreview from './VideoPreview';
 
 interface Props {
   onLogout?: () => void;
@@ -33,7 +34,9 @@ export default function EditorLayout({ onLogout }: Props) {
         <div className="border-r border-gray-300 overflow-auto p-2">
           <ScriptEditor />
         </div>
-        <div className="flex flex-col items-center justify-center border-r border-gray-300 overflow-auto p-2">Video Preview</div>
+        <div className="flex flex-col items-center justify-center border-r border-gray-300 overflow-auto p-2">
+          <VideoPreview />
+        </div>
         <div className="overflow-auto p-2">Timeline</div>
         <div className="absolute top-0 left-[30%] w-1 bg-gray-200 cursor-col-resize" />
         <div className="absolute top-0 left-[70%] w-1 bg-gray-200 cursor-col-resize" />
