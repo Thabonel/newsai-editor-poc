@@ -2,10 +2,9 @@
 interface Props {
   status: 'disabled' | 'ready' | 'processing' | 'complete';
   onClick: () => void;
-  progress?: number;
 }
 
-export default function EditStoryButton({ status, onClick, progress = 0 }: Props) {
+export default function EditStoryButton({ status, onClick }: Props) {
   const pulse = status === 'ready' ? 'animate-pulse' : '';
   const disabled = status === 'disabled' || status === 'processing';
   const text = status === 'complete' ? 'Edit Complete \u2713' : 'EDIT STORY';
@@ -20,11 +19,6 @@ export default function EditStoryButton({ status, onClick, progress = 0 }: Props
       <span className="text-2xl">🤖 {text}</span>
       {status !== 'complete' && (
         <span className="text-xs">AI will create your rough cut</span>
-      )}
-      {status === 'processing' && (
-        <div className="absolute bottom-0 left-0 w-full h-2 bg-gray-700">
-          <div className="bg-green-400 h-2" style={{ width: `${progress}%` }} />
-        </div>
       )}
     </button>
   );
