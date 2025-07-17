@@ -1,4 +1,5 @@
 import Login from './components/Login';
+import EditorLayout from './components/EditorLayout';
 import { useAuthStore } from './stores/authStore';
 
 function App() {
@@ -8,12 +9,7 @@ function App() {
     return <Login />;
   }
 
-  return (
-    <div className="p-4 text-center">
-      <h1 className="text-2xl mb-4">Hello World</h1>
-      <button className="bg-gray-300 px-4 py-2" onClick={() => setToken(null)}>Logout</button>
-    </div>
-  );
+  return <EditorLayout onLogout={() => setToken(null)} />;
 }
 
 export default App;
