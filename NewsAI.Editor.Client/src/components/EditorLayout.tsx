@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ScriptEditor from './ScriptEditor';
 
 interface Props {
   onLogout?: () => void;
@@ -28,7 +29,9 @@ export default function EditorLayout({ onLogout }: Props) {
       </header>
 
       <div className="grid grid-cols-[30%_1fr_30%] h-full relative">
-        <div className="border-r border-gray-300 overflow-auto p-2">Script Editor</div>
+        <div className="border-r border-gray-300 overflow-auto p-2">
+          <ScriptEditor />
+        </div>
         <div className="flex flex-col items-center justify-center border-r border-gray-300 overflow-auto p-2">Video Preview</div>
         <div className="overflow-auto p-2">Timeline</div>
         <div className="absolute top-0 left-[30%] w-1 bg-gray-200 cursor-col-resize" />
