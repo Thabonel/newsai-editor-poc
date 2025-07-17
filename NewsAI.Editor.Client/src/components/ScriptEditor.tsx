@@ -1,16 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Editor, { loader } from '@monaco-editor/react';
 import type { Monaco } from '@monaco-editor/react';
 
 loader.config({ paths: { vs: '/node_modules/monaco-editor/min/vs' } });
 
-const SAMPLE_SCRIPT = `[VIDEO: Shots of littered beaches, volunteers cleaning up]
+export const SAMPLE_SCRIPT = `[VIDEO: Shots of littered beaches, volunteers cleaning up]
 EMMA (VO): Sydney's iconic beaches are under threat as plastic waste continues to wash ashore...
 [SOUND BITE – Environmental Scientist]: "We're seeing a dramatic rise in microplastics..."`;
 
-export default function ScriptEditor() {
+interface Props {
+  value: string;
+  onChange: (val: string) => void;
+}
+
+export default function ScriptEditor({ value, onChange }: Props) {
   const monacoRef = useRef<Monaco | null>(null);
-  const [value, setValue] = useState(SAMPLE_SCRIPT);
   const wordCount = value.split(/\s+/).filter(Boolean).length;
   const duration = Math.ceil(wordCount / 150 * 60); // seconds
 
@@ -57,10 +61,10 @@ export default function ScriptEditor() {
       <Editor
         height="100%"
         defaultLanguage="news-script"
-        defaultValue={SAMPLE_SCRIPT}
+        value={value}
         theme="news-theme"
         onMount={(_editor, monaco) => { monacoRef.current = monaco; }}
-        onChange={(val) => setValue(val || '')}
+        onChange={(val) => onChange(val || '')}
         options={{ minimap: { enabled: false } }}
       />
     </div>

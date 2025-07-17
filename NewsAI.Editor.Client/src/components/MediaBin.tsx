@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { v4 as uuidv4 } from 'uuid';
 
-interface MediaFile {
+export interface MediaFile {
   id: string;
   url: string;
   name: string;
@@ -18,7 +18,11 @@ interface UploadingFile {
 
 const fakeDuration = () => Math.round(Math.random() * 200) + 30;
 
-export default function MediaBin() {
+interface Props {
+  onMediaChange?: (files: MediaFile[]) => void;
+}
+
+export default function MediaBin({ onMediaChange }: Props) {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [uploading, setUploading] = useState<UploadingFile[]>([]);
   const [search, setSearch] = useState('');
@@ -75,6 +79,10 @@ export default function MediaBin() {
     if (search && !f.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
+
+  useEffect(() => {
+    onMediaChange?.(files);
+  }, [files, onMediaChange]);
 
   return (
     <div className="h-full flex flex-col" {...getRootProps()}>
