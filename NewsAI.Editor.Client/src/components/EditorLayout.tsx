@@ -3,6 +3,7 @@ import ScriptEditor, { SAMPLE_SCRIPT } from './ScriptEditor';
 import MediaBin, { type MediaFile } from './MediaBin';
 import VideoPreview from './VideoPreview';
 import EditStoryButton from './EditStoryButton';
+import ProcessingModal from './ProcessingModal';
 
 interface Props {
   onLogout?: () => void;
@@ -13,7 +14,7 @@ export default function EditorLayout({ onLogout }: Props) {
   const [script, setScript] = useState(SAMPLE_SCRIPT);
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [editStatus, setEditStatus] = useState<'disabled' | 'ready' | 'processing' | 'complete'>('disabled');
-  const [progress, setProgress] = useState(0);
+  const [showProcessing, setShowProcessing] = useState(false);
 
   useEffect(() => {
     if (script.trim() && mediaFiles.length > 0) {
@@ -26,17 +27,7 @@ export default function EditorLayout({ onLogout }: Props) {
   const handleEdit = () => {
     if (editStatus !== 'ready') return;
     setEditStatus('processing');
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        const next = Math.min(p + 10, 100);
-        if (next >= 100) {
-          clearInterval(interval);
-          setEditStatus('complete');
-        }
-        return next;
-      });
-    }, 300);
+    setShowProcessing(true);
   };
 
   return (
@@ -67,7 +58,7 @@ export default function EditorLayout({ onLogout }: Props) {
           <VideoPreview />
         </div>
         <div className="overflow-auto p-2 flex flex-col items-center">
-          <EditStoryButton status={editStatus} onClick={handleEdit} progress={progress} />
+          <EditStoryButton status={editStatus} onClick={handleEdit} />
           <div className="mt-4">Timeline</div>
         </div>
         <div className="absolute top-0 left-[30%] w-1 bg-gray-200 cursor-col-resize" />
@@ -85,6 +76,17 @@ export default function EditorLayout({ onLogout }: Props) {
       >
         {showMediaBin ? 'Hide Bin' : 'Show Bin'}
       </button>
+      <ProcessingModal
+        open={showProcessing}
+        onCancel={() => {
+          setShowProcessing(false);
+          setEditStatus('ready');
+        }}
+        onComplete={() => {
+          setShowProcessing(false);
+          setEditStatus('complete');
+        }}
+      />
     </div>
   );
 }
